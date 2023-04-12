@@ -19,9 +19,9 @@ namespace SpeakBeaver
         public string ApiKey = "你的ApiKey";
         // 没有说话多少毫秒后中断连接
         public int NoSpeakTime = 10000;
-        // 默认最长说话时间，单位毫秒
+        // 默认最长说话时间，单位秒
         public bool AutoDisconnect = false;
-        public int AutoDisconnectTime = 20000;
+        public int AutoDisconnectTime = 20;
         // 设置是否自动加标点
         public bool AutoPunctuation = false;
         // 设置候选句个数
