@@ -39,7 +39,19 @@ namespace SpeakBeaver
             {"第四","D4"},
             {"第五","D5"},
         };
-
+        // 设置发送指令
+        public Dictionary<string, string> ChannelDictionary = new()
+        {
+            {"小队","/p "},
+            {"新人","/b "},
+            {"部队","/fc "},
+            {"说话","/s "},
+            {"喊话","/sh "},
+            {"呼喊","/y "},
+            {"echo","/e "}
+        };
+        // 设置当前频道
+        public string Channel = "echo";
         // the below exist just to make saving less cumbersome
         [NonSerialized]
         private DalamudPluginInterface? PluginInterface;

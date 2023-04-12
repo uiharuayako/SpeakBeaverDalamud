@@ -25,7 +25,8 @@ namespace SpeakBeaver
                 webSocket.Dispose();
             }
         }
-
+        // 线程安全？？
+        public static volatile string MsgToSend = "";
         // NAudio Recorder
         private static WaveInEvent recorder;
 
@@ -66,6 +67,7 @@ namespace SpeakBeaver
         // 开启一次语音转文字
         public static void StartSTT()
         {
+            RecStatusConfig.OnConnecting();
             IsRecording = true;
             // 创建录音设备
             recorder = new WaveInEvent()
@@ -92,6 +94,7 @@ namespace SpeakBeaver
             // 开启WebSocket
             webSocket.Open();
         }
+
 
         private static void OnRecordingStopped(object sender, EventArgs e)
         {
@@ -186,13 +189,15 @@ namespace SpeakBeaver
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
+            string sb = "";
             foreach (var item in ws)
             {
-                sb.Append(item.cw[0].w);
+                sb += item.cw[0].w;
             }
-
-            Plugin.SendChatMessage(sb.ToString(), false);
+#if DEBUG
+            Dalamud.Logging.PluginLog.Log($"识别结果{sb}");
+#endif
+            MsgToSend = sb;
             if (msg.data.status == 2)
             {
                 Dalamud.Logging.PluginLog.Log("识别结束");
@@ -203,7 +208,10 @@ namespace SpeakBeaver
         private static void OnClosed(object sender, EventArgs e)
         {
             Dalamud.Logging.PluginLog.Log("SpeakBeaver：本次ws连接关闭");
-            Plugin.SendChatMessage(Plugin.Configuration.EndMessage, true);
+            if (IsRecording)
+            {
+                RecStatusConfig.OnEnd();
+            }
             IsRecording = false;
         }
 
@@ -216,7 +224,9 @@ namespace SpeakBeaver
         {
             Dalamud.Logging.PluginLog.Log("SpeakBeaver：ws连接开启，尝试开启录音");
             recorder.StartRecording();
-            Plugin.SendChatMessage(Plugin.Configuration.StartMessage, true);
+            RecStatusConfig.OnStart();
+            // 设置自动停止
+            AutoStop(AutoStopStatus);
         }
 
         private static String GetAuthUrl(String hostUrl, String apiKey, String apiSecret)
@@ -247,7 +257,7 @@ namespace SpeakBeaver
         private static Timer timer;
 
         // 设置自动停止的方式，有三种：1.按照设置的时间停止 2.按照传入的时间停止 3.不自动停止
-        private enum autoStopType
+        public enum AutoStopType
         {
             // 按照设置的时间停止
             SetTime = 0,
@@ -258,25 +268,24 @@ namespace SpeakBeaver
             // 不自动停止
             NoStop = 2
         }
-
-        private static void AutoStop(autoStopType type, int stopTime = 0)
+        public static AutoStopType AutoStopStatus = AutoStopType.SetTime;
+        private static void AutoStop(AutoStopType type, int stopTime = 0)
         {
             switch (type)
             {
-                case autoStopType.SetTime:
+                case AutoStopType.SetTime:
                     // 如果设置了自动停止，且设置了停止时间
-                    if (Plugin.Configuration.NoSpeakTime > 0 && Plugin.Configuration.AutoDisconnect)
+                    if (Plugin.Configuration.AutoDisconnectTime > 0 && Plugin.Configuration.AutoDisconnect)
                     {
-                        Plugin.ChatGui.PrintChat(
-                            Plugin.SayBeaver($"本次输入最大时间{Plugin.Configuration.NoSpeakTime / 1000}秒"));
-                        AutoStop(Plugin.Configuration.NoSpeakTime);
+                        Plugin.SayBeaver($"本次输入最大时间{Plugin.Configuration.AutoDisconnectTime / 1000}秒");
+                        AutoStop(Plugin.Configuration.AutoDisconnectTime);
                     }
 
                     break;
-                case autoStopType.PassTime:
+                case AutoStopType.PassTime:
                     AutoStop(stopTime);
                     break;
-                case autoStopType.NoStop:
+                case AutoStopType.NoStop:
                     break;
                 default:
                     break;
