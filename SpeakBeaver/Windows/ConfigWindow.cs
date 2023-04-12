@@ -68,16 +68,26 @@ public class ConfigWindow : Window, IDisposable
 
         if (ImGui.CollapsingHeader("频道设置"))
         {
+            // 设置一个button用来添加频道
+            if (ImGui.Button("添加频道"))
+            {
+                // 添加一个频道
+                Plugin.Configuration.ChannelDictionary.Add("新频道", "/xx ");
+                Plugin.Configuration.Save();
+
+            }
             // 设定一个三列的表格，用于存放频道设置
-            ImGui.Columns(3, "频道设置", false);
+            ImGui.Columns(4, "频道设置", false);
             ImGui.SetColumnWidth(0, 40);
             ImGui.SetColumnWidth(1, 210);
-            ImGui.SetColumnWidth(2, 100);
+            ImGui.SetColumnWidth(2, 110);
             ImGui.Text("启用");
             ImGui.NextColumn();
             ImGui.Text("频道名称");
             ImGui.NextColumn();
             ImGui.Text("前缀");
+            ImGui.NextColumn();
+            ImGui.Text("删除");
             ImGui.NextColumn();
             // 遍历频道字典
             foreach (var (name, cmd) in Plugin.Configuration.ChannelDictionary)
@@ -89,6 +99,7 @@ public class ConfigWindow : Window, IDisposable
                     // 如果选中的频道改变，就把改变后的频道存入配置文件
                     Plugin.Configuration.Channel = name;
                     Plugin.Configuration.Save();
+                    Plugin.UpdateChannelBar();
                 }
 
                 ImGui.NextColumn();
@@ -112,6 +123,15 @@ public class ConfigWindow : Window, IDisposable
                     Plugin.Configuration.Save();
                 }
 
+                ImGui.NextColumn();
+                // 一个按钮用于删除当前频道
+                if (ImGui.Button($"删除##{name}"))
+                {
+                    // 如果点击了删除按钮，就把当前频道从字典中移除
+                    Plugin.Configuration.ChannelDictionary.Remove(name);
+                    Plugin.Configuration.Save();
+                    Plugin.UpdateChannelBar();
+                }
                 ImGui.NextColumn();
             }
 
@@ -140,7 +160,11 @@ public class ConfigWindow : Window, IDisposable
                 Plugin.Configuration.AppID = appID;
                 Plugin.Configuration.Save();
             }
-
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip(
+                    "还没申请讯飞Api？前往插件主页查看白嫖指南！");
+            }
             var apiSecret = Plugin.Configuration.ApiSecret;
             if (ImGui.InputText("ApiSecret", ref apiSecret, 200))
             {
@@ -186,7 +210,7 @@ public class ConfigWindow : Window, IDisposable
             }
 
             var autoDisconnectTime = Plugin.Configuration.AutoDisconnectTime;
-            if (ImGui.InputInt("自动停止转写时长(ms)", ref autoDisconnectTime, 5000))
+            if (ImGui.InputInt("自动停止转写时长(s)", ref autoDisconnectTime, 5000))
             {
                 Plugin.Configuration.AutoDisconnectTime = autoDisconnectTime;
                 Plugin.Configuration.Save();
@@ -194,7 +218,7 @@ public class ConfigWindow : Window, IDisposable
 
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip("当开启转写，在一定时间后停止转写，因为上述原因，设置值大于60000时无效");
+                ImGui.SetTooltip("当开启转写，在一定时间后停止转写，因为上述原因，设置值大于60时无效");
             }
 
             var noSpeakTime = Plugin.Configuration.NoSpeakTime;

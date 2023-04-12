@@ -25,8 +25,10 @@ namespace SpeakBeaver
                 webSocket.Dispose();
             }
         }
+
         // 线程安全？？
         public static volatile string MsgToSend = "";
+
         // NAudio Recorder
         private static WaveInEvent recorder;
 
@@ -212,6 +214,7 @@ namespace SpeakBeaver
             {
                 RecStatusConfig.OnEnd();
             }
+
             IsRecording = false;
         }
 
@@ -268,8 +271,11 @@ namespace SpeakBeaver
             // 不自动停止
             NoStop = 2
         }
+
         public static AutoStopType AutoStopStatus = AutoStopType.SetTime;
-        private static void AutoStop(AutoStopType type, int stopTime = 0)
+        public static int AutoStopTime = Plugin.Configuration.AutoDisconnectTime;
+
+        private static void AutoStop(AutoStopType type)
         {
             switch (type)
             {
@@ -277,13 +283,15 @@ namespace SpeakBeaver
                     // 如果设置了自动停止，且设置了停止时间
                     if (Plugin.Configuration.AutoDisconnectTime > 0 && Plugin.Configuration.AutoDisconnect)
                     {
-                        Plugin.SayBeaver($"本次输入最大时间{Plugin.Configuration.AutoDisconnectTime / 1000}秒");
+                        Plugin.SayBeaver($"本次输入最大时间{Plugin.Configuration.AutoDisconnectTime}秒");
                         AutoStop(Plugin.Configuration.AutoDisconnectTime);
                     }
 
                     break;
                 case AutoStopType.PassTime:
-                    AutoStop(stopTime);
+                    // 以设定的时间
+                    Plugin.SayBeaver($"本次输入最大时间{AutoStopTime}秒");
+                    AutoStop(AutoStopTime);
                     break;
                 case AutoStopType.NoStop:
                     break;
@@ -292,6 +300,7 @@ namespace SpeakBeaver
             }
         }
 
+        // 单位，秒
         private static void AutoStop(int stopTime)
         {
             if (timer != null)
@@ -301,7 +310,7 @@ namespace SpeakBeaver
             }
 
             // 初始化一个timer
-            timer = new Timer(stopTime);
+            timer = new Timer(stopTime * 1000);
             // 只执行一次
             timer.AutoReset = false;
             timer.Elapsed += autoChangeStatus;
@@ -310,8 +319,15 @@ namespace SpeakBeaver
 
         private static void autoChangeStatus(object sender, ElapsedEventArgs e)
         {
+            if (status == VoiceStatus.LastFrame) return;
             status = VoiceStatus.LastFrame;
             Dalamud.Logging.PluginLog.Log("SpeakBeaver：自动停止转写");
+        }
+
+        public static void Stop()
+        {
+            status = VoiceStatus.LastFrame;
+            Dalamud.Logging.PluginLog.Log("SpeakBeaver：手动停止");
         }
     }
 }
