@@ -1,8 +1,15 @@
 using System;
 using System.Numerics;
+using Dalamud.Game.Gui.FlyText;
+using Dalamud.Game.Gui.Toast;
+using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using ImGuiScene;
+using Lumina.Excel.GeneratedSheets;
+using Microsoft.VisualBasic.Logging;
 
 namespace SpeakBeaver.Windows;
 
@@ -38,17 +45,20 @@ public class MainWindow : Window, IDisposable
         {
             plugin.DrawConfigUI();
         }
+
         ImGui.SameLine();
         // 设置一个button用来打开仓库网址
         if (ImGui.Button("插件主页"))
         {
             Dalamud.Utility.Util.OpenLink("https://github.com/uiharuayako/SpeakBeaverDalamud");
         }
+
         ImGui.SameLine();
         if (ImGui.Button("Uiharu的插件仓库"))
         {
             Dalamud.Utility.Util.OpenLink("https://github.com/uiharuayako/DalamudPlugins");
         }
+
         if (ImGui.Button("输入"))
         {
             plugin.StartSTT();
@@ -60,5 +70,21 @@ public class MainWindow : Window, IDisposable
         ImGui.Indent(55);
         ImGui.Image(beaverImage.ImGuiHandle, new Vector2(beaverImage.Width, beaverImage.Height));
         ImGui.Unindent(55);
+#if DEBUG
+        if (ImGui.Button("测试用按钮"))
+        {
+            // Plugin.ChatGui.PrintChat(new XivChatEntry()
+            // {
+            //     Message = new SeString(
+            //         new IconPayload(BitmapFontIcon.AutoTranslateBegin),
+            //         new TextPayload("测试")
+            //     ),
+            //     Name = "测试",
+            //     Type = XivChatType.Say
+            // });
+            Plugin.SendChatMessage("/s nihao",true);
+        }
     }
+#endif
 }
+

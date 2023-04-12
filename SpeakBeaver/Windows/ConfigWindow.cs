@@ -66,6 +66,58 @@ public class ConfigWindow : Window, IDisposable
             Plugin.SendChatMessage(Plugin.Configuration.EndMessage, true);
         }
 
+        if (ImGui.CollapsingHeader("频道设置"))
+        {
+            // 设定一个三列的表格，用于存放频道设置
+            ImGui.Columns(3, "频道设置", false);
+            ImGui.SetColumnWidth(0, 40);
+            ImGui.SetColumnWidth(1, 210);
+            ImGui.SetColumnWidth(2, 100);
+            ImGui.Text("启用");
+            ImGui.NextColumn();
+            ImGui.Text("频道名称");
+            ImGui.NextColumn();
+            ImGui.Text("前缀");
+            ImGui.NextColumn();
+            // 遍历频道字典
+            foreach (var (name, cmd) in Plugin.Configuration.ChannelDictionary)
+            {
+                // 一个Checkbox用于判断当前选中的频道
+                bool currentChannel = name == Plugin.Configuration.Channel;
+                if (ImGui.Checkbox($"##{name}", ref currentChannel))
+                {
+                    // 如果选中的频道改变，就把改变后的频道存入配置文件
+                    Plugin.Configuration.Channel = name;
+                    Plugin.Configuration.Save();
+                }
+
+                ImGui.NextColumn();
+                // 一个文本框用于存放频道名称
+                var channelName = name;
+                if (ImGui.InputText($"名称##{name}", ref channelName, 200))
+                {
+                    // 如果文本框内容改变，就把改变后的内容存入字典
+                    Plugin.Configuration.ChannelDictionary.Remove(name);
+                    Plugin.Configuration.ChannelDictionary.Add(channelName, cmd);
+                    Plugin.Configuration.Save();
+                }
+
+                ImGui.NextColumn();
+                // 一个文本框用于存放频道命令
+                var channelCmd = cmd;
+                if (ImGui.InputText($"前缀##{name}", ref channelCmd, 20))
+                {
+                    // 如果文本框内容改变，就把改变后的内容存入字典
+                    Plugin.Configuration.ChannelDictionary[channelName] = channelCmd;
+                    Plugin.Configuration.Save();
+                }
+
+                ImGui.NextColumn();
+            }
+
+            ImGui.Columns(1);
+        }
+
         // 折叠框
         if (ImGui.CollapsingHeader("讯飞Api设置"))
         {
