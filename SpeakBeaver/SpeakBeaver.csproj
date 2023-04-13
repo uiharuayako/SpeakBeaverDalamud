@@ -2,9 +2,9 @@
 
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Authors>uiharu</Authors>
+        <Authors>Uiharu</Authors>
         <Company></Company>
-        <Version>0.0.0.1</Version>
+        <Version>0.1.0.1</Version>
         <Description>Speak Beaver</Description>
         <Copyright></Copyright>
         <PackageProjectUrl>https://github.com/uiharuayako/SpeakBeaverDalamud</PackageProjectUrl>
@@ -41,6 +41,7 @@
         <PackageReference Include="DalamudPackager" Version="2.1.10" />
         <PackageReference Include="ECommons" Version="1.0.0.3" />
         <PackageReference Include="NAudio" Version="2.1.0" />
+        <PackageReference Include="System.Speech" Version="7.0.0" />
         <PackageReference Include="WebSocket4Net" Version="0.15.2" />
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
