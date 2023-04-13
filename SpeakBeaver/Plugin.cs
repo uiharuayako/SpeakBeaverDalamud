@@ -226,6 +226,10 @@ namespace SpeakBeaver
             WindowSystem.Draw();
         }
 
+        public void DrawVoiceUI()
+        {
+            VoiceControlWindow.Toggle();
+        }
         public void DrawConfigUI()
         {
             ConfigWindow.Toggle();
