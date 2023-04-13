@@ -10,8 +10,6 @@ namespace SpeakBeaver
     {
         public int Version { get; set; } = 0;
 
-        public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
-
         // 保存讯飞API相关
         public string HostUrl= "http://iat-api.xfyun.cn/v2/iat";
         public string AppID = "你的AppID";

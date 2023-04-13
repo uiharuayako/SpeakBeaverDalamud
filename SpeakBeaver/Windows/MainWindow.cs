@@ -63,6 +63,12 @@ public class MainWindow : Window, IDisposable
             plugin.DrawConfigUI();
         }
 
+        ImGui.SameLine(); 
+        if (ImGui.Button("语音控制设置"))
+        {
+            plugin.DrawVoiceUI();
+        }
+
         ImGui.SameLine();
 
         if (ImGui.Button("开始语音输入"))
