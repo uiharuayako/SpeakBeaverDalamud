@@ -52,6 +52,14 @@ namespace SpeakBeaver
         };
         // 设置当前频道
         public string Channel = "echo";
+        // 关闭词，当语音转写结果包含此词时，停止语音转写并不输出这句话
+        public string CloseWord = "停止语音输入";
+        // 语音控制，字典<string,string>，key为语音指令，value为发送的指令
+        public Dictionary<string, string> VoiceControl = new()
+            {
+            {"开始语音转写","/speak start"},
+            {"停止语音转写","/speak stop"}
+        };
         // the below exist just to make saving less cumbersome
         [NonSerialized]
         private DalamudPluginInterface? PluginInterface;

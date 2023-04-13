@@ -23,6 +23,7 @@ namespace SpeakBeaver
     {
         public string Name => "Speak Beaver";
         private const string CommandName = "/speak";
+        private const string VoiceCommandName = "/svoice";
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
@@ -51,7 +52,9 @@ namespace SpeakBeaver
         private static Chat chat { get; set; } = null!;
         private ConfigWindow ConfigWindow { get; init; }
         private MainWindow MainWindow { get; init; }
-
+        private VoiceControlWindow VoiceControlWindow { get; init; }
+        // 语音控制
+        public VoiceControlManager voiceControl;
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
             [RequiredVersion("1.0")] CommandManager commandManager,
@@ -75,11 +78,16 @@ namespace SpeakBeaver
             var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "beaver.png");
             var beaverImage = PluginInterface.UiBuilder.LoadImage(imagePath);
 
+            // 初始化语音控制
+            voiceControl = new VoiceControlManager();
+
             ConfigWindow = new ConfigWindow(this);
             MainWindow = new MainWindow(this, beaverImage);
+            VoiceControlWindow = new VoiceControlWindow(this);
 
             WindowSystem.AddWindow(ConfigWindow);
             WindowSystem.AddWindow(MainWindow);
+            WindowSystem.AddWindow(VoiceControlWindow);
             // 初始化状态栏
             StatusEntry = DtrBar.Get(Name);
             SetStatusEntry(RecStatusConfig.RecStatus.Idle);
@@ -93,7 +101,10 @@ namespace SpeakBeaver
             {
                 HelpMessage = "打开Speak Beaver主界面"
             });
-
+            CommandManager.AddHandler(VoiceCommandName, new CommandInfo(OnCommand)
+            {
+                HelpMessage = "打开语音控制界面"
+            });
             PluginInterface.UiBuilder.Draw += DrawUI;
             PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
             Framework.Update += OnFrameworkUpdate;
@@ -106,6 +117,12 @@ namespace SpeakBeaver
                 RecStatusConfig.SendMsg(Speech2Text.MsgToSend);
                 Speech2Text.MsgToSend = "";
             }
+
+            if (!VoiceControlManager.Command.Equals(""))
+            {
+                chat.SendMessage(VoiceControlManager.Command);
+                VoiceControlManager.Command = "";
+            }
         }
 
         public void Dispose()
@@ -117,7 +134,9 @@ namespace SpeakBeaver
             StatusEntry.Dispose();
             ChannelBarEntry.Dispose();
             CommandManager.RemoveHandler(CommandName);
+            CommandManager.RemoveHandler(VoiceCommandName);
             ECommons.ECommonsMain.Dispose();
+            voiceControl.Dispose();
         }
 
         private void OnCommand(string command, string args)
@@ -179,14 +198,12 @@ namespace SpeakBeaver
                 Speech2Text.Stop();
                 return;
             }
-            // 各命令功能总结：
-            // /speak start：开始一次使用默认设置的语音识别
-            // /speak limit <时长>：开始一次使用自定义限制时长的语音识别
-            // /speak unlimited：开始一次无限制时长的语音识别
-            // /speak stop：停止语音识别
-            // /speak change <频道>：更改频道
-            // /speak config：打开设置界面
-            // /speak：打开主界面
+            // 语音识别界面
+            if (command == VoiceCommandName)
+            {
+                VoiceControlWindow.Toggle();
+                return;
+            }
 
 
         }

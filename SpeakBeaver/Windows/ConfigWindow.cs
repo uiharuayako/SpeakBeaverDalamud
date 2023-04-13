@@ -65,7 +65,17 @@ public class ConfigWindow : Window, IDisposable
         {
             Plugin.SendChatMessage(Plugin.Configuration.EndMessage, true);
         }
-
+        // 设置停止词
+        var closeWord = Plugin.Configuration.CloseWord;
+        if (ImGui.InputText("输入停止词", ref closeWord, 200))
+        {
+            Plugin.Configuration.CloseWord = closeWord;
+            Plugin.Configuration.Save();
+        }
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.SetTooltip("当语音转写结果包括这个词时，停止语音转写\n建议在讯飞控制台的热词里添加这个词以提高识别准确度\n当设置为空时，关闭这个功能");
+        }
         if (ImGui.CollapsingHeader("频道设置"))
         {
             // 设置一个button用来添加频道
@@ -105,7 +115,7 @@ public class ConfigWindow : Window, IDisposable
                 ImGui.NextColumn();
                 // 一个文本框用于存放频道名称
                 var channelName = name;
-                if (ImGui.InputText($"名称##{name}", ref channelName, 200))
+                if (ImGui.InputText($"名称##{name}", ref channelName, 200,ImGuiInputTextFlags.EnterReturnsTrue))
                 {
                     // 如果文本框内容改变，就把改变后的内容存入字典
                     Plugin.Configuration.ChannelDictionary.Remove(name);
@@ -135,6 +145,56 @@ public class ConfigWindow : Window, IDisposable
                 ImGui.NextColumn();
             }
 
+            ImGui.Columns(1);
+        }
+
+        if (ImGui.CollapsingHeader("替换词"))
+        {
+            // 设置一个button用于添加
+            if (ImGui.Button("添加##替换词"))
+            {
+                Plugin.Configuration.ReplaceDict.Add("原词", "替换词");
+            }
+            // 建立一个两列的列表，让用户编辑和添加替换词
+            ImGui.Columns(3, "替换词", false);
+            ImGui.SetColumnWidth(0, 210);
+            ImGui.SetColumnWidth(1, 210);
+            ImGui.Text("原字符串");
+            ImGui.NextColumn();
+            ImGui.Text("替换字符串");
+            ImGui.NextColumn();
+            ImGui.Text("删除");
+            ImGui.NextColumn();
+
+            // 遍历替换词字典
+            foreach (var (oriStr,newStr) in Plugin.Configuration.ReplaceDict)
+            {
+                var oriStrInput = oriStr;
+                if (ImGui.InputText($"原字符串##{oriStr}", ref oriStrInput, 200, ImGuiInputTextFlags.EnterReturnsTrue))
+                {
+                    // 如果原字符串改变，就把改变后的内容存入字典
+                    Plugin.Configuration.ReplaceDict.Remove(oriStr);
+                    Plugin.Configuration.ReplaceDict.Add(oriStrInput, newStr);
+                    Plugin.Configuration.Save();
+                }
+                ImGui.NextColumn();
+                var newStrInput = newStr;
+                if (ImGui.InputText($"替换字符串##{oriStr}", ref newStrInput, 200))
+                {
+                    // 如果替换字符串改变，就把改变后的内容存入字典
+                    Plugin.Configuration.ReplaceDict[oriStrInput] = newStrInput;
+                    Plugin.Configuration.Save();
+                }
+                ImGui.NextColumn();
+                // 一个按钮用于删除当前替换词
+                if (ImGui.Button($"删除##{oriStr}"))
+                {
+                    // 如果点击了删除按钮，就把当前替换词从字典中移除
+                    Plugin.Configuration.ReplaceDict.Remove(oriStr);
+                    Plugin.Configuration.Save();
+                }
+                ImGui.NextColumn();
+            }
             ImGui.Columns(1);
         }
 

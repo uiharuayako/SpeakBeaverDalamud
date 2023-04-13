@@ -28,6 +28,12 @@
           "NAudio.WinMM": "2.1.0"
         }
       },
+      "System.Speech": {
+        "type": "Direct",
+        "requested": "[7.0.0, )",
+        "resolved": "7.0.0",
+        "contentHash": "7E0uB92Cx2sXR67HW9rMKJqDACdLuz9t3I3OwZUFDzAgwKXWuY6CYeRT/NiypHcyZO2be9+0H0w0M6fn7HQtgQ=="
+      },
       "WebSocket4Net": {
         "type": "Direct",
         "requested": "[0.15.2, )",

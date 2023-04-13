@@ -1,13 +1,15 @@
 {
-  "Author": "your name here",
-  "Name": "Speak Beaver",
-  "Punchline": "A short one-liner that shows up in /xlplugins.",
-  "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
-  "InternalName": "SpeakBeaver",
-  "ApplicableVersion": "any",
-  "Tags": [
-    "sample",
-    "plugin",
-    "beavers"
-  ]
+    "Author": "Uiharu",
+    "Name": "Speak Beaver",
+    "Punchline": "大河狸会帮助你输入信息，但是代价是什么呢",
+    "Description": "/speak 打开主界面，主界面里有命令帮助和使用说明",
+    "InternalName": "SpeakBeaver",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 7,
+    "IconUrl": "https://raw.githubusercontent.com/uiharuayako/SpeakBeaverDalamud/master/Data/beaver.png",
+    "Tags": [
+        "speak",
+        "voice",
+        "beavers"
+    ]
 }

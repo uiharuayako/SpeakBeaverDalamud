@@ -25,10 +25,32 @@ namespace SpeakBeaver
             Connecting = 1,
             Recording = 2
         }
+        // 将输入的字符串按照字典替换成新的字符串
+        public static string Replace(string input)
+        {
+            var output = input;
+            foreach (var (key, value) in Plugin.Configuration.ReplaceDict)
+            {
+                output = output.Replace(key, value);
+            }
+            return output;
+        }
+
 
         // 按照设置发送信息
         public static void SendMsg(string msg)
         {
+            // 检测停止词
+            if (!Plugin.Configuration.CloseWord.Equals(""))
+            {
+                if (msg.Contains(Plugin.Configuration.CloseWord))
+                {
+                    Speech2Text.Stop();
+                    return;
+                }
+            }
+            // 执行字符串替换
+            msg = Replace(msg);
             if (Plugin.Configuration.ChannelDictionary.ContainsKey(Plugin.Configuration.Channel))
             {
                 var sendMsg = Plugin.Configuration.ChannelDictionary[Plugin.Configuration.Channel] + msg;
