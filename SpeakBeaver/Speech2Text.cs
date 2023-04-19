@@ -55,6 +55,19 @@ namespace SpeakBeaver
             return devices;
         }
 
+        // 根据字典中元素个数判断当前是否有麦克风连接
+        public static bool HasInputDevice()
+        {
+#if DEBUG
+            Plugin.SayBeaver($"当前有{GetInputDevices().Count}个设备");
+            foreach (var (id, device) in GetInputDevices())
+            {
+                Plugin.SayBeaver(device);
+            }
+#endif
+            return GetInputDevices().Count > 0;
+        }
+
         // 记录音频输入设备的number
         public static int SelectedDevice = 0;
 
@@ -69,6 +82,12 @@ namespace SpeakBeaver
         // 开启一次语音转文字
         public static void StartSTT()
         {
+            // 如果没有连接音频设备
+            if (!HasInputDevice())
+            {
+                Plugin.SayBeaver("未检测到音频设备，语音识别功能将无法使用，请连接音频设备后再使用语音识别");
+                return;
+            }
             RecStatusConfig.OnConnecting();
             IsRecording = true;
             // 创建录音设备

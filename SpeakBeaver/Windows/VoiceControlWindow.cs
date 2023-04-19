@@ -35,6 +35,14 @@ public class VoiceControlWindow : Window, IDisposable
 
     public override void Draw()
     {
+        // 语音控制状态指示
+        ImGui.Text($"当前语音服务状态：{voiceControl.GetStatus()}");
+        ImGui.SameLine();
+        // 初始化语音控制服务
+        if (ImGui.Button("初始化语音服务"))
+        {
+            voiceControl.InitEngine();
+        }
         // 语音控制界面，让用户自定义命令
         // 添加命令按钮
         if (ImGui.Button("添加命令"))

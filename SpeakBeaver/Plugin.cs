@@ -128,7 +128,8 @@ namespace SpeakBeaver
         public void Dispose()
         {
             WindowSystem.RemoveAllWindows();
-
+            // 这句不写又会怎么样呢？
+            Framework.Update -= OnFrameworkUpdate;
             ConfigWindow.Dispose();
             MainWindow.Dispose();
             StatusEntry.Dispose();
@@ -216,7 +217,8 @@ namespace SpeakBeaver
             {"/speak unlimited","开始一次无限制时长的语音识别"},
             {"/speak stop","停止语音识别"},
             {"/speak change <频道>","更改频道，将频道改为频道名\n例如：/speak change 小队"},
-            {"/speak config","打开设置界面"}
+            {"/speak config","打开设置界面"},
+            {"/svoice","打开语音控制界面"}
         };
 
         public static string QolbarSetting =

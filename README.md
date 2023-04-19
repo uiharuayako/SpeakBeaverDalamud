@@ -14,7 +14,9 @@
 4. 在右边找到“服务接口认证信息”，把APPID、APISecret、APIKey的一串代码复制到插件设置的讯飞Api设置里，注意不要多复制出空格。
 5. 服务接口认证信息下面有一个高级功能，把“多候选-句级”开通（暂时还没做这个功能，但是接口里填了这个参数，理论上开不开通功能是一样的）
 6. （非必要）在QolBar里添加并修改这个快捷方式，把按键改成你觉得方便点的  
-```H4sIAAAAAAAACqtWUimpLEhVslJKVdJRSjJSsqqGiwB5Okp5QEZwQWpitlNqYllqEVCk2EfJKhqhqhimyiM/F2RGMpCpXwzSAeRk+gPVGugZ6ABxLJAbpGQF4iklBxcAJSx0TGJrdbAY9XRD/8sZ81EMU0jOSMxLT1WAS5Fr9J6Gp8u7UY0uLkksKqHAyMY5z9YuQjcyv4B8E1+s2/d87zo0/+fnpWWmE2cmUDgpHCisowQSQqgtRtiqVAY02kjPWM9Iz0CpFgD9o8HeBwIAAA==```
+``
+H4sIAAAAAAAACqtWUimpLEhVslJKVdJRSjJSsqqGiwB5Okp5QEZwQWpitlNqYllqEVCk2EfJKhqhqhimyiM/F2RGMpCpXwzSAeRk+gPVGugZ6ABxLJAbpGQF4iklBxcAJSx0TGJrdbAY9XRD/8sZ81EMU0jOSMxLT1WAS5Fr9J6Gp8u7UY0uLkksKqHAyMY5z9YuQjcyv4B8E1+s2/d87zo0/+fnpWWmk2/ms77lTzu2wc0sy89MBkUXEaYBhZPCgcI6SiAhhNpihH1KZUBDjfSM9Yz0DJRqAT9/qf1VAgAA
+``
 7. （非必要）打开插件主界面（命令``/speak``），查看命令列表，把命令列表中的命令写到宏里绑定到你觉得方便的快捷键上。
 8.  在设置中把输入设备切到你正在使用的麦克风，然后使用命令或者点击插件主界面的 开始语音输入 按钮，或者对着你的麦克风大喊``“开始语音转写”``，测试一下语言输入能不能正常工作
 
@@ -30,4 +32,4 @@
 远敏
 ```
 如果你有了更完整的列表，比如把FF的一些职业，地名，技能名称，BOSS名列出来了，请提个issue！  
-遗憾的是他不支持英文，像D1 D2这种词还是会识别成第一，第二。在上线的正式版中，将会加入词语替换功能。（现在先摆一会
+遗憾的是他不支持英文，像D1 D2这种词还是会识别成第一，第二。在上线的正式版中，将会加入词语替换功能。~~（现在先摆一会）~~已经加上这个功能了
