@@ -53,8 +53,13 @@ namespace SpeakBeaver
             }
             // 设置语音识别引擎的事件
             recEngine.SpeechRecognized += RecEngine_SpeechRecognized;
-            // 开始识别
-            recEngine.RecognizeAsync(RecognizeMode.Multiple);
+            // 判断是否开启语音控制
+            if (Plugin.Configuration.EnableVoiceControl)
+            {
+                // 开启语音识别
+                recEngine.RecognizeAsync(RecognizeMode.Multiple);
+            }
+            
         }
         // 获取当前语音识别服务运行状态
         public string GetStatus()
