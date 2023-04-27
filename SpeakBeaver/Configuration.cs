@@ -58,6 +58,8 @@ namespace SpeakBeaver
             {"开始语音转写","/speak start"},
             {"停止语音转写","/speak stop"}
         };
+        // 设置语音控制是否开启
+        public bool EnableVoiceControl = true;
         // the below exist just to make saving less cumbersome
         [NonSerialized]
         private DalamudPluginInterface? PluginInterface;

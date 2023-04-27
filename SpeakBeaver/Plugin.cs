@@ -200,12 +200,27 @@ namespace SpeakBeaver
                 return;
             }
             // 语音识别界面
-            if (command == VoiceCommandName)
+            if (command == VoiceCommandName && args.Equals(""))
             {
                 VoiceControlWindow.Toggle();
                 return;
             }
-
+            // 语音识别开启
+            if (command == VoiceCommandName && args.Equals("start"))
+            {
+                voiceControl.Start();
+                Configuration.EnableVoiceControl = true;
+                Configuration.Save();
+                return;
+            }
+            // 语音识别关闭
+            if (command == VoiceCommandName && args.Equals("stop"))
+            {
+                voiceControl.Stop();
+                Configuration.EnableVoiceControl = false;
+                Configuration.Save();
+                return;
+            }
 
         }
         // 将各个命令及其帮助写成字典
@@ -218,7 +233,9 @@ namespace SpeakBeaver
             {"/speak stop","停止语音识别"},
             {"/speak change <频道>","更改频道，将频道改为频道名\n例如：/speak change 小队"},
             {"/speak config","打开设置界面"},
-            {"/svoice","打开语音控制界面"}
+            {"/svoice","打开语音控制界面"},
+            {"/svoice start","开启语音控制"},
+            {"/svoice stop","关闭语音控制"}
         };
 
         public static string QolbarSetting =

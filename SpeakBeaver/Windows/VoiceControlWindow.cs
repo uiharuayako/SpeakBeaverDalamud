@@ -38,6 +38,25 @@ public class VoiceControlWindow : Window, IDisposable
         // 语音控制状态指示
         ImGui.Text($"当前语音服务状态：{voiceControl.GetStatus()}");
         ImGui.SameLine();
+        // 增加一个Checkbox，让用户可以关闭语音服务
+        bool enableVoiceControl = Plugin.Configuration.EnableVoiceControl;
+        if (ImGui.Checkbox("开启语音控制", ref enableVoiceControl))
+        {
+            Plugin.Configuration.EnableVoiceControl = enableVoiceControl;
+            Plugin.Configuration.Save();
+            // 当语音控制被设置为关闭，且语音控制当前开启（不为停止即开启）
+            if (!enableVoiceControl && !voiceControl.GetStatus().Equals("停止"))
+            {
+                // 停止语音控制
+                voiceControl.Stop();
+            }
+            // 当语音控制被设置为开启，且语音控制当前关闭（为停止）
+            if (enableVoiceControl && voiceControl.GetStatus().Equals("停止"))
+            {
+                // 开启语音控制
+                voiceControl.Start();
+            }
+        }
         // 初始化语音控制服务
         if (ImGui.Button("初始化语音服务"))
         {
