@@ -109,7 +109,6 @@ public class ConfigWindow : Window, IDisposable
                     // 如果选中的频道改变，就把改变后的频道存入配置文件
                     Plugin.Configuration.Channel = name;
                     Plugin.Configuration.Save();
-                    Plugin.UpdateChannelBar();
                 }
 
                 ImGui.NextColumn();
@@ -140,7 +139,6 @@ public class ConfigWindow : Window, IDisposable
                     // 如果点击了删除按钮，就把当前频道从字典中移除
                     Plugin.Configuration.ChannelDictionary.Remove(name);
                     Plugin.Configuration.Save();
-                    Plugin.UpdateChannelBar();
                 }
                 ImGui.NextColumn();
             }
