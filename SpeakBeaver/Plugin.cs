@@ -77,7 +77,7 @@ namespace SpeakBeaver
             // you might normally want to embed resources and load them from the manifest stream
             var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "beaver.png");
             var beaverImage = PluginInterface.UiBuilder.LoadImage(imagePath);
-
+            
             // 初始化语音控制
             voiceControl = new VoiceControlManager();
 
@@ -90,7 +90,8 @@ namespace SpeakBeaver
             WindowSystem.AddWindow(VoiceControlWindow);
             // 初始化状态栏
             StatusEntry = DtrBar.Get(Name);
-            SetStatusEntry(RecStatusConfig.RecStatus.Idle);
+            RecStatusConfig.Status = RecStatusConfig.RecStatus.Idle;
+            RecStatusConfig.UpdateStatus();
             ChannelBarEntry= DtrBar.Get(Name+" Channel");
             UpdateChannelBar();
             // 初始化Chat
@@ -123,6 +124,8 @@ namespace SpeakBeaver
                 chat.SendMessage(VoiceControlManager.Command);
                 VoiceControlManager.Command = "";
             }
+            RecStatusConfig.UpdateStatus();
+            UpdateChannelBar();
         }
 
         public void Dispose()
@@ -164,7 +167,6 @@ namespace SpeakBeaver
                 {
                     Configuration.Channel = argsList[1];
                     Configuration.Save();
-                    UpdateChannelBar();
                     return;
                 }
             }

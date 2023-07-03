@@ -36,6 +36,13 @@ namespace SpeakBeaver
             return output;
         }
 
+        // 当前录音状态
+        public static RecStatus Status = RecStatus.Idle;
+        // 更新录音状态
+        public static void UpdateStatus()
+        {
+            Plugin.SetStatusEntry(Status);
+        }
 
         // 按照设置发送信息
         public static void SendMsg(string msg)
@@ -86,7 +93,8 @@ namespace SpeakBeaver
             // 发送toast
             Plugin.ToastGui.ShowNormal("开始录音");
             // 更新状态栏
-            Plugin.SetStatusEntry(RecStatus.Recording);
+            Status=RecStatus.Recording;
+            UpdateStatus();
         }
 
         // 当结束录音
@@ -97,7 +105,8 @@ namespace SpeakBeaver
             // 发送toast
             Plugin.ToastGui.ShowNormal("结束录音");
             // 更新状态栏
-            Plugin.SetStatusEntry(RecStatus.Idle);
+            Status=RecStatus.Idle;
+            UpdateStatus();
         }
 
         // 当开始连接，但并未录音
@@ -106,7 +115,8 @@ namespace SpeakBeaver
             // 发送toast
             Plugin.ToastGui.ShowNormal("正在连接...请等待提示后开始说话");
             // 更新状态栏
-            Plugin.SetStatusEntry(RecStatus.Connecting);
+            Status = RecStatus.Connecting;
+            UpdateStatus();
         }
     }
 }

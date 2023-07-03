@@ -5,7 +5,7 @@
     "Description": "/speak 打开主界面，主界面里有命令帮助和使用说明，/svoice 打开语音控制界面",
     "InternalName": "SpeakBeaver",
     "ApplicableVersion": "any",
-    "DalamudApiLevel": 7,
+    "DalamudApiLevel": 8,
     "IconUrl": "https://raw.githubusercontent.com/uiharuayako/SpeakBeaverDalamud/master/Data/beaver.png",
     "Tags": [
         "speak",
