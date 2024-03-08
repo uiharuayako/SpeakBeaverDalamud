@@ -15,6 +15,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
 using ECommons.Automation;
+using ECommons.DalamudServices;
 using SpeakBeaver.Windows;
 
 namespace SpeakBeaver
@@ -26,7 +27,6 @@ namespace SpeakBeaver
         private const string VoiceCommandName = "/svoice";
 
         private DalamudPluginInterface PluginInterface { get; init; }
-        private CommandManager CommandManager { get; init; }
         public static Configuration Configuration { get; private set; }
 
         public WindowSystem WindowSystem = new("SpeakBeaver");
@@ -34,81 +34,51 @@ namespace SpeakBeaver
         // 状态栏
         public static DtrBarEntry StatusEntry { get; private set; } = null!;
         public static DtrBarEntry ChannelBarEntry { get; private set; } = null!;
-        // 引入Service
-        public static DtrBar DtrBar { get; private set; } = null!;
-
-        // ChatGui
-        public static ChatGui ChatGui { get; private set; } = null!;
-
-        // toast
-        public static ToastGui ToastGui { get; private set; } = null!;
-
-        //Framework
-        public static Framework Framework { get; private set; } = null!;
-        //ClientState
-        public static ClientState ClientState { get; private set; } = null!;
 
         // 引入Chat，设置成private类型
         private static Chat chat { get; set; } = null!;
-        private ConfigWindow ConfigWindow { get; init; }
-        private MainWindow MainWindow { get; init; }
-        private VoiceControlWindow VoiceControlWindow { get; init; }
+        private ComboMainWindow ComboMainWindow { get; init; }
         // 语音控制
         public VoiceControlManager voiceControl;
         public Plugin(
-            [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] CommandManager commandManager,
-            [RequiredVersion("1.0")] DtrBar dtrBar,
-            [RequiredVersion("1.0")] ChatGui chatGui,
-            [RequiredVersion("1.0")] ToastGui toastGui,
-            [RequiredVersion("1.0")] Framework framework,
-            [RequiredVersion("1.0")] ClientState clientState)
+            [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
         {
             PluginInterface = pluginInterface;
-            CommandManager = commandManager;
-            DtrBar = dtrBar;
-            ChatGui = chatGui;
-            ToastGui = toastGui;
-            Framework = framework;
-            ClientState = clientState;
             Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             Configuration.Initialize(PluginInterface);
+            // 初始化Chat
+            ECommons.ECommonsMain.Init(pluginInterface, this);
 
             // you might normally want to embed resources and load them from the manifest stream
             var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "beaver.png");
+            Svc.Log.Info(imagePath);
             var beaverImage = PluginInterface.UiBuilder.LoadImage(imagePath);
             
             // 初始化语音控制
             voiceControl = new VoiceControlManager();
-
-            ConfigWindow = new ConfigWindow(this);
-            MainWindow = new MainWindow(this, beaverImage);
-            VoiceControlWindow = new VoiceControlWindow(this);
-
-            WindowSystem.AddWindow(ConfigWindow);
-            WindowSystem.AddWindow(MainWindow);
-            WindowSystem.AddWindow(VoiceControlWindow);
+            
+            ComboMainWindow = new ComboMainWindow(this, beaverImage);
+            
+            WindowSystem.AddWindow(ComboMainWindow);
             // 初始化状态栏
-            StatusEntry = DtrBar.Get(Name);
+            StatusEntry = Svc.DtrBar.Get(Name);
             RecStatusConfig.Status = RecStatusConfig.RecStatus.Idle;
             RecStatusConfig.UpdateStatus();
-            ChannelBarEntry= DtrBar.Get(Name+" Channel");
+            ChannelBarEntry= Svc.DtrBar.Get(Name+" Channel");
             UpdateChannelBar();
-            // 初始化Chat
-            ECommons.ECommonsMain.Init(pluginInterface, this);
             chat = new Chat();
 
-            CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
+            Svc.Commands.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "打开Speak Beaver主界面"
             });
-            CommandManager.AddHandler(VoiceCommandName, new CommandInfo(OnCommand)
+            Svc.Commands.AddHandler(VoiceCommandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "打开语音控制界面"
             });
             PluginInterface.UiBuilder.Draw += DrawUI;
-            PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-            Framework.Update += OnFrameworkUpdate;
+            PluginInterface.UiBuilder.OpenConfigUi += DrawConfig;
+            Svc.Framework.Update += OnFrameworkUpdate;
         }
 
         private void OnFrameworkUpdate(object _)
@@ -132,13 +102,12 @@ namespace SpeakBeaver
         {
             WindowSystem.RemoveAllWindows();
             // 这句不写又会怎么样呢？
-            Framework.Update -= OnFrameworkUpdate;
-            ConfigWindow.Dispose();
-            MainWindow.Dispose();
+            Svc.Framework.Update -= OnFrameworkUpdate;
+            ComboMainWindow.Dispose();
             StatusEntry.Dispose();
             ChannelBarEntry.Dispose();
-            CommandManager.RemoveHandler(CommandName);
-            CommandManager.RemoveHandler(VoiceCommandName);
+            Svc.Commands.RemoveHandler(CommandName);
+            Svc.Commands.RemoveHandler(VoiceCommandName);
             ECommons.ECommonsMain.Dispose();
             voiceControl.Dispose();
         }
@@ -150,13 +119,7 @@ namespace SpeakBeaver
             // 打开主界面
             if (command == CommandName && args.Equals(""))
             {
-                MainWindow.Toggle();
-                return;
-            }
-            // 打开设置界面，命令/speak config
-            if (command == CommandName && args.Equals("config"))
-            {
-                ConfigWindow.Toggle();
+                ComboMainWindow.Toggle();
                 return;
             }
             // 更改频道，格式/speak change <频道>
@@ -201,12 +164,6 @@ namespace SpeakBeaver
                 Speech2Text.Stop();
                 return;
             }
-            // 语音识别界面
-            if (command == VoiceCommandName && args.Equals(""))
-            {
-                VoiceControlWindow.Toggle();
-                return;
-            }
             // 语音识别开启
             if (command == VoiceCommandName && args.Equals("start"))
             {
@@ -234,7 +191,6 @@ namespace SpeakBeaver
             {"/speak unlimited","开始一次无限制时长的语音识别"},
             {"/speak stop","停止语音识别"},
             {"/speak change <频道>","更改频道，将频道改为频道名\n例如：/speak change 小队"},
-            {"/speak config","打开设置界面"},
             {"/svoice","打开语音控制界面"},
             {"/svoice start","开启语音控制"},
             {"/svoice stop","关闭语音控制"}
@@ -247,13 +203,9 @@ namespace SpeakBeaver
             WindowSystem.Draw();
         }
 
-        public void DrawVoiceUI()
+        private void DrawConfig()
         {
-            VoiceControlWindow.Toggle();
-        }
-        public void DrawConfigUI()
-        {
-            ConfigWindow.Toggle();
+            ComboMainWindow.Toggle();
         }
 
         // 发送消息，接受的第二个参数决定了发送消息的方式
@@ -265,7 +217,7 @@ namespace SpeakBeaver
             }
             else
             {
-                ChatGui.Print(message);
+                Svc.Chat.Print(message);
             }
         }
 
@@ -294,7 +246,7 @@ namespace SpeakBeaver
         // 河狸！说话！
         public static void SayBeaver(string message)
         {
-            ChatGui.PrintChat(new XivChatEntry
+            Svc.Chat.Print(new XivChatEntry
             {
                 Message = message,
                 Name = "大河狸",

@@ -60,6 +60,11 @@ namespace SpeakBeaver
         };
         // 设置语音控制是否开启
         public bool EnableVoiceControl = true;
+        // 设置技能事件是否开启
+        public bool EnableActionTrigger = false;
+        // 技能事件
+        public List<ActionEventInfo> Events = new List<ActionEventInfo>();
+        public List<ActionEventType> EventTypes = new List<ActionEventType>();
         // the below exist just to make saving less cumbersome
         [NonSerialized]
         private DalamudPluginInterface? PluginInterface;

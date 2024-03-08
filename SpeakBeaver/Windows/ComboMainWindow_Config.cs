@@ -6,15 +6,10 @@ using ImGuiNET;
 
 namespace SpeakBeaver.Windows;
 
-public class ConfigWindow : Window, IDisposable
+public partial class ComboMainWindow
 {
-    public ConfigWindow(Plugin plugin) : base(
-        "Speak Beaver设置",
-        ImGuiWindowFlags.NoCollapse) { }
 
-    public void Dispose() { }
-
-    public override void Draw()
+    public void DrawConfig()
     {
         var selectedDevice = Speech2Text.SelectedDevice;
         // 选择音频设备

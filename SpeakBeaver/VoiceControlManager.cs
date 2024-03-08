@@ -30,12 +30,14 @@ namespace SpeakBeaver
             // 初始化引擎
             if (recEngine is null)
             {
-                recEngine = new SpeechRecognitionEngine();
+                recEngine = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("zh-CN"));
             }
+
             // 从配置文件中读取关键词
             var keywords = Plugin.Configuration.VoiceControl.Keys.ToArray();
             // 创建语法
             var grammarBuilder = new GrammarBuilder();
+            grammarBuilder.Culture = recEngine.RecognizerInfo.Culture;
             grammarBuilder.Append(new Choices(keywords));
             var grammar = new Grammar(grammarBuilder);
             // 将语法添加到语音识别引擎
@@ -51,6 +53,7 @@ namespace SpeakBeaver
             {
                 recEngine.SetInputToDefaultAudioDevice();
             }
+
             // 设置语音识别引擎的事件
             recEngine.SpeechRecognized += RecEngine_SpeechRecognized;
             // 判断是否开启语音控制
@@ -59,8 +62,8 @@ namespace SpeakBeaver
                 // 开启语音识别
                 recEngine.RecognizeAsync(RecognizeMode.Multiple);
             }
-            
         }
+
         // 获取当前语音识别服务运行状态
         public string GetStatus()
         {

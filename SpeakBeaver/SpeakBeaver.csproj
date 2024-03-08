@@ -4,7 +4,7 @@
     <PropertyGroup>
         <Authors>Uiharu</Authors>
         <Company></Company>
-        <Version>0.1.0.4</Version>
+        <Version>0.1.0.5</Version>
         <Description>Speak Beaver</Description>
         <Copyright></Copyright>
         <PackageProjectUrl>https://github.com/uiharuayako/SpeakBeaverDalamud</PackageProjectUrl>
@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <DalamudLibPath>..\..\DalamudDep\</DalamudLibPath>
+        <DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
@@ -38,6 +38,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
         <PackageReference Include="DalamudPackager" Version="2.1.11" />
         <PackageReference Include="NAudio" Version="2.1.0" />
         <PackageReference Include="System.Speech" Version="7.0.0" />

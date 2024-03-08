@@ -14,26 +14,10 @@ using Microsoft.VisualBasic.Logging;
 
 namespace SpeakBeaver.Windows;
 
-public class VoiceControlWindow : Window, IDisposable
+public partial class ComboMainWindow
 {
-    private VoiceControlManager voiceControl;
-    public VoiceControlWindow(Plugin plugin) : base(
-        "Speak Beaver语音控制", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
-    {
-        SizeConstraints = new WindowSizeConstraints
-        {
-            MinimumSize = new Vector2(375, 330),
-            MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
-        };
-        voiceControl = plugin.voiceControl;
-    }
 
-    public void Dispose()
-    {
-
-    }
-
-    public override void Draw()
+    public void DrawVoice(VoiceControlManager voiceControl)
     {
         // 语音控制状态指示
         ImGui.Text($"当前语音服务状态：{voiceControl.GetStatus()}");

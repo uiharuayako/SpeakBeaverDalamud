@@ -6,7 +6,9 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Internal;
 using Dalamud.Interface.Windowing;
+using ECommons.DalamudServices;
 using ImGuiNET;
 using ImGuiScene;
 using Lumina.Excel.GeneratedSheets;
@@ -14,13 +16,13 @@ using Microsoft.VisualBasic.Logging;
 
 namespace SpeakBeaver.Windows;
 
-public class MainWindow : Window, IDisposable
+public partial class ComboMainWindow : Window, IDisposable
 {
-    private TextureWrap beaverImage;
+    private IDalamudTextureWrap beaverImage;
     private Plugin plugin;
 
-    public MainWindow(Plugin plugin, TextureWrap beaverImage) : base(
-        "Speak Beaver", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
+    public ComboMainWindow(Plugin plugin, IDalamudTextureWrap beaverImage) : base(
+        "Speak Beaver")
     {
         SizeConstraints = new WindowSizeConstraints
         {
@@ -40,36 +42,48 @@ public class MainWindow : Window, IDisposable
 
     public override void Draw()
     {
+        if (ImGui.BeginTabBar("Speak Beaver Windows"))
+        {
+            if (ImGui.BeginTabItem("语音输入"))
+            {
+                DrawMain();
+                ImGui.EndTabItem();
+            }
+
+            if (ImGui.BeginTabItem("语音控制"))
+            {
+                DrawVoice(plugin.voiceControl);
+                ImGui.EndTabItem();
+            }
+            if (ImGui.BeginTabItem("设置"))
+            {
+                DrawConfig();
+                ImGui.EndTabItem();
+            }
+            ImGui.EndTabBar();
+        }
+        ImGui.End();
+    }
+
+    public void DrawMain()
+    {
         ImGui.Image(beaverImage.ImGuiHandle, new Vector2(32, 32));
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DPSRed, $"大河狸会替代你说话，快说");
         ImGui.SameLine();
         if (ImGui.Button("“谢谢大河狸”！"))
         {
-            Plugin.ChatGui.PrintChat(new XivChatEntry()
+            Svc.Chat.Print(new XivChatEntry()
             {
                 Message = new SeString(new TextPayload("嗷嗷，嗷，嗷嗷嗷！"),
                                        new IconPayload(BitmapFontIcon.AutoTranslateBegin),
                                        new TextPayload("谢谢大河狸！"), new IconPayload(BitmapFontIcon.AutoTranslateEnd)
                 ),
                 Name =
-                    $"大河狸（曾经是{Plugin.ClientState.LocalPlayer.Name}@{Plugin.ClientState.LocalPlayer.HomeWorld.GameData.Name}）",
+                    $"大河狸（曾经是{Svc.ClientState.LocalPlayer.Name}@{Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name}）",
                 Type = XivChatType.NPCDialogue
             });
         }
-
-        if (ImGui.Button("设置"))
-        {
-            plugin.DrawConfigUI();
-        }
-
-        ImGui.SameLine(); 
-        if (ImGui.Button("语音控制设置"))
-        {
-            plugin.DrawVoiceUI();
-        }
-
-        ImGui.SameLine();
 
         if (ImGui.Button("开始语音输入"))
         {
@@ -136,5 +150,15 @@ public class MainWindow : Window, IDisposable
             Plugin.SendChatMessage("/s nihao", true);
         }
 #endif
+    }
+    internal static void Spacing(byte count = 1)
+    {
+        string s = string.Empty;
+        for (int i = 0; i < count; i++)
+        {
+            s += "    ";
+        }
+        ImGui.Text(s);
+        ImGui.SameLine();
     }
 }

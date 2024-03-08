@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dalamud.Logging;
+using ECommons.DalamudServices;
 
 namespace SpeakBeaver
 {
@@ -91,7 +92,7 @@ namespace SpeakBeaver
             // 发送StartMessage
             Plugin.SendChatMessage(Plugin.Configuration.StartMessage, true);
             // 发送toast
-            Plugin.ToastGui.ShowNormal("开始录音");
+            Svc.Toasts.ShowNormal("开始录音");
             // 更新状态栏
             Status=RecStatus.Recording;
             UpdateStatus();
@@ -103,7 +104,7 @@ namespace SpeakBeaver
             // 发送EndMessage
             Plugin.SendChatMessage(Plugin.Configuration.EndMessage, true);
             // 发送toast
-            Plugin.ToastGui.ShowNormal("结束录音");
+            Svc.Toasts.ShowNormal("结束录音");
             // 更新状态栏
             Status=RecStatus.Idle;
             UpdateStatus();
@@ -113,7 +114,7 @@ namespace SpeakBeaver
         public static void OnConnecting()
         {
             // 发送toast
-            Plugin.ToastGui.ShowNormal("正在连接...请等待提示后开始说话");
+            Svc.Toasts.ShowNormal("正在连接...请等待提示后开始说话");
             // 更新状态栏
             Status = RecStatus.Connecting;
             UpdateStatus();
